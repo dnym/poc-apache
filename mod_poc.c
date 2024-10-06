@@ -31,6 +31,10 @@ static apr_status_t input_filter(ap_filter_t *f, apr_bucket_brigade *bb, ap_inpu
 static int handler(request_rec* r) {
 	// skip processing subrequests
 	if ((r->main != NULL) || (r->prev != NULL)) {
+                if (!strcmp(r->handler, CGI_MAGIC_TYPE) || !strcmp(r->handler, "cgi-script")) {
+                        if (r->prev != NULL && r->prev->input_filters != NULL && r->prev->input_filters->frec != NULL && r->prev->input_filters->frec->name != NULL && !strcmp(r->prev->input_filters->frec->name, "poc_in"))
+                                ap_add_input_filter("poc_IN", r->prev->input_filters->ctx, r, r->connection);
+                }
 		return DECLINED;
 	}
 
